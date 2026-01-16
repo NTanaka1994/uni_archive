@@ -1,0 +1,13 @@
+<a href="logout">ログアウト</a><br>
+ようこそ{{ email | safe }}
+<form action="home" method="POST">
+    タイトル<input type="text" name="title"><br>
+    <input type="submit" value="make">
+</form>
+<form action="home" method="GET">
+    検　　索<input type="text" name="word"><br>
+    <input type="submit" value="search">
+</form>
+
+
+{{res | safe}}

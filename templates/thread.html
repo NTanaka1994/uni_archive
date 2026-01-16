@@ -1,0 +1,9 @@
+<a href="logout">ログアウト</a><br>
+<form action="thread" method="POST">
+    班　　　名<input type="text" name="team"><br>
+    学生証番号<input type="text" name="num"><br>
+    <input type="hidden" name="id" value={{ id | safe }}>
+    <input type="submit" value="post">
+</form>
+
+{{res | safe}}
