@@ -1,3 +1,5 @@
+import numpy as np
+
 def babble(a, length):
     for i in range(length-1):
         for j in range(length-i-1):
@@ -6,6 +8,7 @@ def babble(a, length):
                 a[j] = a[j+1]
                 a[j+1] = temp
             print(a)
+            
 def insertion(a, n):
     for i in range(n):
         temp = a[i]
@@ -15,8 +18,10 @@ def insertion(a, n):
             j = j - 1
         a[j+1] = temp
         print(a)
+        
 def quick(a, first, last):
     pivot = a[(first + last) // 2]
+    print(pivot)
     i = first
     j = last
     while(True):
@@ -35,6 +40,14 @@ def quick(a, first, last):
     if (j + 1) < last:
         quick(a, j+1, last)
 
-a = [7, 4, 6, 2, 3, 5, 1, 9, 8, 0]
+def create_array():
+    rng = np.random.default_rng()
+    a = []
+    while len(a)<10:
+        tmp = rng.integers(10)
+        if tmp not in a:
+            a.append(tmp)
+    return a
+a = create_array()
 print(a)
-insertion(a, 10)
+quick(a, 0, 9)
