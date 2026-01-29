@@ -2,7 +2,7 @@ from flask import Flask, redirect, render_template, request, session
 from werkzeug.security import generate_password_hash as gph
 from werkzeug.security import check_password_hash as cph
 import sqlite3 as sql
-from datetime import timedelta
+from datetime import timedelta, datetime
 import html
 import secrets
 
@@ -18,9 +18,10 @@ def route():
 def singup():
     if request.method == "GET":
         addr = request.remote_addr
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         con = sql.connect("data.db")
         cur = con.cursor()
-        cur.execute("INSERT INTO log (ip, email, uri, method) VALUES (?, ?, ?, ?)", (addr, "Null", "/signup", "GET"))
+        cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, "Null", "/signup", "GET", now))
         con.commit()
         con.close()
         return render_template("signup.html")
@@ -41,9 +42,10 @@ def singup():
            con.commit()
            con.close()
            addr = request.remote_addr
+           now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
            con = sql.connect("data.db")
            cur = con.cursor()
-           cur.execute("INSERT INTO log (ip, email, uri, method) VALUES (?, ?, ?, ?)", (addr, "Null", "/signup", "POST"))
+           cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, "Null", "/signup", "POST", now))
            con.commit()
            con.close()
            return redirect("login-select")
@@ -57,9 +59,10 @@ def login():
 @app.route("/login-select")
 def login_select():
     addr = request.remote_addr
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     con = sql.connect("data.db")
     cur = con.cursor()
-    cur.execute("INSERT INTO log (ip, email, uri, method) VALUES (?, ?, ?, ?)", (addr, "Null", "/login-select", "GET"))
+    cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, "Null", "/login-select", "GET", now))
     con.commit()
     con.close()
     return render_template("login_select.html")
@@ -81,9 +84,10 @@ def get_login():
         if cph(data[0][0], passwd):
             session["email"] = email
             addr = request.remote_addr
+            now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             con = sql.connect("data.db")
             cur = con.cursor()
-            cur.execute("INSERT INTO log (ip, email, uri, method) VALUES (?, ?, ?, ?)", (addr, session["email"], "/get-login", "GET"))
+            cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, session["email"], "/get-login", "GET", now))
             con.commit()
             con.close()
             return redirect("get-success")
@@ -91,9 +95,10 @@ def get_login():
             return render_template("get_login2.html", error="間違っています")
     else:
         addr = request.remote_addr
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         con = sql.connect("data.db")
         cur = con.cursor()
-        cur.execute("INSERT INTO log (ip, email, uri, method) VALUES (?, ?, ?, ?)", (addr, "Null", "/get-login", "GET"))
+        cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, "Null", "/get-login", "GET", now))
         con.commit()
         con.close()
         return render_template("get_login2.html")
@@ -115,9 +120,10 @@ def post_login():
         if cph(data[0][0], passwd):
             session["email"] = email
             addr = request.remote_addr
+            now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             con = sql.connect("data.db")
             cur = con.cursor()
-            cur.execute("INSERT INTO log (ip, email, uri, method) VALUES (?, ?, ?, ?)", (addr, session["email"], "/post-login", "POST"))
+            cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, session["email"], "/post-login", "POST", now))
             con.commit()
             con.close()
             return redirect("post-success")
@@ -125,9 +131,10 @@ def post_login():
             return render_template("post_login2.html", error="間違っています")
     else:
         addr = request.remote_addr
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         con = sql.connect("data.db")
         cur = con.cursor()
-        cur.execute("INSERT INTO log (ip, email, uri, method) VALUES (?, ?, ?, ?)", (addr, "Null", "/post-login", "GET"))
+        cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, "Null", "/post-login", "GET", now))
         con.commit()
         con.close()
         return render_template("post_login2.html")
@@ -146,9 +153,10 @@ def home():
     if "email" in session:
         if request.method == "GET":
             addr = request.remote_addr
+            now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             con = sql.connect("data.db")
             cur = con.cursor()
-            cur.execute("INSERT INTO log (ip, email, uri, method) VALUES (?, ?, ?, ?)", (addr, session["email"], "/home", "GET"))
+            cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, session["email"], "/home", "GET", now))
             con.commit()
             con.close()
             token = secrets.token_hex()
@@ -164,13 +172,17 @@ def home():
             for ids, title in cur:
                 res += "<a href=thread?id=" + str(ids) +">"+ html.escape(title) + "</a><br>"
             con.close()
-            return render_template("home.html", res=res, token=token)
+            if session["email"] == "aaa@gmail.com":
+                return render_template("home.html", res=res, token=token, log="<a href=\"log\">ログ</a>")
+            else:
+                return render_template("home.html", res=res, token=token)
         elif request.method == "POST":
             if request.form["home"] == session["home"]:
                 addr = request.remote_addr
+                now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 con = sql.connect("data.db")
                 cur = con.cursor()
-                cur.execute("INSERT INTO log (ip, email, uri, method) VALUES (?, ?, ?, ?)", (addr, session["email"], "/home", "POST"))
+                cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, session["email"], "/home", "POST", now))
                 con.commit()
                 con.close()
                 title = request.form["title"]
@@ -190,9 +202,10 @@ def thread():
     if "email" in session:
         if request.method == "GET":
             addr = request.remote_addr
+            now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             con = sql.connect("data.db")
             cur = con.cursor()
-            cur.execute("INSERT INTO log (ip, email, uri, method) VALUES (?, ?, ?, ?)", (addr, session["email"], "/thread", "GET"))
+            cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, session["email"], "/thread", "GET", now))
             con.commit()
             con.close()
             token = secrets.token_hex()
@@ -209,9 +222,10 @@ def thread():
         elif request.method == "POST":
             if request.form["thread"] == session["thread"]:
                 addr = request.remote_addr
+                now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 con = sql.connect("data.db")
                 cur = con.cursor()
-                cur.execute("INSERT INTO log (ip, email, uri, method) VALUES (?, ?, ?, ?)", (addr, session["email"], "/thread", "POST"))
+                cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, session["email"], "/thread", "POST", now))
                 con.commit()
                 con.close()
                 thread_id = request.form["id"]
@@ -230,13 +244,42 @@ def thread():
 @app.route("/logout")
 def logout():
     addr = request.remote_addr
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     con = sql.connect("data.db")
     cur = con.cursor()
-    cur.execute("INSERT INTO log (ip, email, uri, method) VALUES (?, ?, ?, ?)", (addr, session["email"], "/logout", "GET"))
+    cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, session["email"], "/logout", "GET", now))
     con.commit()
     con.close()
     session.pop("email", None)
     return redirect("login")
+
+@app.route("/log")
+def log():
+    if session["email"] == "aaa@gmail.com":
+        if request.args.get("ip") is None:
+            res = ""
+            con = sql.connect("data.db")
+            cur = con.cursor()
+            cur.execute("SELECT ip FROM log GROUP BY ip")
+            for ip in cur:
+                res = res + html.escape(str(ip[0])) + "<br>"
+            con.close()
+            return render_template("log.html", res=res)
+        else:
+            res = "<table border=\"1\">\n"
+            addr = request.args.get("ip")
+            con = sql.connect("data.db")
+            cur = con.cursor()
+            cur.execute("SELECT ip, email, uri, time FROM log WHERE ip LIKE ? ORDER BY time",(addr,))
+            for ip, email, uri, time in cur:
+                res = res + "<tr><td>" + html.escape(ip) + "</td>\n"
+                res = res + "<td>" + html.escape(email) + "</td>\n"
+                res = res + "<td>" + html.escape(uri) + "</td>\n"
+                res = res + "<td>" + html.escape(time) + "</td></tr>\n"
+            res = res + "</table>"
+            return render_template("log.html", res=res)
+    else:
+        return redirect("home")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=80)
