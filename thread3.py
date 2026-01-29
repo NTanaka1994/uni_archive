@@ -277,9 +277,11 @@ def log():
                 res = res + "<td>" + html.escape(uri) + "</td>\n"
                 res = res + "<td>" + html.escape(time) + "</td></tr>\n"
             res = res + "</table>"
+            con.close()
             return render_template("log.html", res=res)
     else:
         return redirect("home")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=80)
+
