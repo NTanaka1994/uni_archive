@@ -45,7 +45,7 @@ def singup():
            now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
            con = sql.connect("data.db")
            cur = con.cursor()
-           cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, "Null", "/signup", "POST", now))
+           cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, "Null", "/signup{email=%s&passwd=%s}"%(email, passwd), "POST", now))
            con.commit()
            con.close()
            return redirect("login-select")
@@ -87,7 +87,7 @@ def get_login():
             now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             con = sql.connect("data.db")
             cur = con.cursor()
-            cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, session["email"], "/get-login", "GET", now))
+            cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, session["email"], "/get-login?email=%s&passwd=%s"%(email, passwd), "GET", now))
             con.commit()
             con.close()
             return redirect("get-success")
@@ -123,7 +123,7 @@ def post_login():
             now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             con = sql.connect("data.db")
             cur = con.cursor()
-            cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, session["email"], "/post-login", "POST", now))
+            cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, session["email"], "/post-login{email=%s&passwd=%s}"%(email, passwd), "POST", now))
             con.commit()
             con.close()
             return redirect("post-success")
@@ -148,25 +148,33 @@ def get_success():
 def post_success():
     return render_template("post_success.html")
 
+#-------------------脆弱性対策-------------------------------
 @app.route("/home", methods=["GET", "POST"])
 def home():
     if "email" in session:
         if request.method == "GET":
-            addr = request.remote_addr
-            now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            con = sql.connect("data.db")
-            cur = con.cursor()
-            cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, session["email"], "/home", "GET", now))
-            con.commit()
-            con.close()
             token = secrets.token_hex()
             session["home"] = token
-            con = sql.connect("data.db")
-            cur = con.cursor()
             if request.args.get("word") is None:
+                addr = request.remote_addr
+                now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                con = sql.connect("data.db")
+                cur = con.cursor()
+                cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, session["email"], "/home", "GET", now))
+                con.commit()
+                con.close()
+                con = sql.connect("data.db")
+                cur = con.cursor()
                 cur.execute("SELECT id, title FROM thread ORDER BY id DESC")
             else:
                 word = request.args.get("word")
+                addr = request.remote_addr
+                now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                con = sql.connect("data.db")
+                cur = con.cursor()
+                cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, session["email"], "/home?word=%s"%(word), "GET", now))
+                con.commit()
+                con.close()
                 cur.execute("SELECT id, title FROM thread WHERE title like ? ORDER BY id DESC",("%"+word+"%",))
             res = ""
             for ids, title in cur:
@@ -178,14 +186,14 @@ def home():
                 return render_template("home.html", res=res, token=token)
         elif request.method == "POST":
             if request.form["home"] == session["home"]:
+                title = request.form["title"]
                 addr = request.remote_addr
                 now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 con = sql.connect("data.db")
                 cur = con.cursor()
-                cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, session["email"], "/home", "POST", now))
+                cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, session["email"], "/home{title=%s}"%(title), "POST", now))
                 con.commit()
                 con.close()
-                title = request.form["title"]
                 con = sql.connect("data.db")
                 cur = con.cursor()
                 cur.execute("INSERT INTO thread (title) VALUES (?)", (title,))
@@ -201,16 +209,16 @@ def home():
 def thread():
     if "email" in session:
         if request.method == "GET":
+            thread_id = request.args.get("id")
             addr = request.remote_addr
             now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             con = sql.connect("data.db")
             cur = con.cursor()
-            cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, session["email"], "/thread", "GET", now))
+            cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, session["email"], "/thread?id=%s"%(thread_id), "GET", now))
             con.commit()
             con.close()
             token = secrets.token_hex()
             session["thread"] = token
-            thread_id = request.args.get("id")
             con = sql.connect("data.db")
             cur = con.cursor()
             cur.execute("SELECT team, num FROM comment WHERE thread_id=?", (thread_id,))
@@ -221,16 +229,16 @@ def thread():
             return render_template("thread.html", res=res, id=thread_id, token=token)
         elif request.method == "POST":
             if request.form["thread"] == session["thread"]:
+                thread_id = request.form["id"]
+                team = request.form["team"]
+                num = request.form["num"]
                 addr = request.remote_addr
                 now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 con = sql.connect("data.db")
                 cur = con.cursor()
-                cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, session["email"], "/thread", "POST", now))
+                cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, session["email"], "/thread{id=%s&team=%s&num=%s}"%(thread_id, team, num), "POST", now))
                 con.commit()
                 con.close()
-                thread_id = request.form["id"]
-                team = request.form["team"]
-                num = request.form["num"]
                 con = sql.connect("data.db")
                 cur = con.cursor()
                 cur.execute("INSERT INTO comment (thread_id, team, num) VALUES (?, ?, ?)", (thread_id, team, num))
@@ -282,6 +290,104 @@ def log():
     else:
         return redirect("home")
 
+#-------------------脆弱性対策してない-------------------------------
+@app.route("/home2", methods=["GET", "POST"])
+def home2():
+    if "email" in session:
+        if request.method == "GET":
+            token = secrets.token_hex()
+            session["home"] = token
+            if request.args.get("word") is None:
+                addr = request.remote_addr
+                now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                con = sql.connect("data.db")
+                cur = con.cursor()
+                cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, session["email"], "/home2", "GET", now))
+                con.commit()
+                con.close()
+                con = sql.connect("data.db")
+                cur = con.cursor()
+                cur.execute("SELECT id, title FROM thread ORDER BY id DESC")
+            else:
+                word = request.args.get("word")
+                addr = request.remote_addr
+                now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                con = sql.connect("data.db")
+                cur = con.cursor()
+                cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, session["email"], "/home2?word=%s"%(word), "GET", now))
+                con.commit()
+                con.close()
+                con = sql.connect("data.db")
+                cur = con.cursor()
+                cur.execute("SELECT id, title FROM thread WHERE title like ? ORDER BY id DESC",("%"+word+"%",))
+            res = ""
+            for ids, title in cur:
+                res += "<a href=thread2?id=" + str(ids) +">"+ html.escape(title) + "</a><br>"
+            con.close()
+            if session["email"] == "aaa@gmail.com":
+                return render_template("home.html", res=res, token=token, log="<a href=\"log\">ログ</a>")
+            else:
+                return render_template("home.html", res=res, token=token)
+        elif request.method == "POST":
+            if request.form["home"] == session["home"]:
+                title = request.form["title"]
+                addr = request.remote_addr
+                now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                con = sql.connect("data.db")
+                cur = con.cursor()
+                cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, session["email"], "/home2{title=%s}"%(title), "POST", now))
+                con.commit()
+                con.close()
+                con = sql.connect("data.db")
+                cur = con.cursor()
+                cur.execute("INSERT INTO thread (title) VALUES (?)", (title,))
+                con.commit()
+                con.close()
+                return redirect("home")
+            else:
+                return "<h1>不正なアクセスです</h1>"
+    else:
+        return redirect("login-select")
+
+@app.route("/thread2", methods=["GET", "POST"])
+def thread2():
+    if "email" in session:
+        if request.method == "GET":
+            thread_id = request.args.get("id")
+            addr = request.remote_addr
+            now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            con = sql.connect("data.db")
+            cur = con.cursor()
+            cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, session["email"], "/thread2?id=%s"%(thread_id), "GET", now))
+            con.commit()
+            con.close()
+            con = sql.connect("data.db")
+            cur = con.cursor()
+            cur.execute("SELECT team, num FROM comment WHERE thread_id=%s"%(thread_id))
+            res = ""
+            for team, num in cur:
+                res += team +"  "+ str(num) + "<br>"
+            con.close()
+            return render_template("thread2.html", res=res, id=thread_id)
+        elif request.method == "POST":
+            thread_id = request.form["id"]
+            team = request.form["team"]
+            num = request.form["num"]
+            addr = request.remote_addr
+            now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            con = sql.connect("data.db")
+            cur = con.cursor()
+            cur.execute("INSERT INTO log (ip, email, uri, method, time) VALUES (?, ?, ?, ?, ?)", (addr, session["email"], "/thread2{id=%s, team=%s, num=%s}"%(thread_id, team, num), "POST", now))
+            con.commit()
+            con.close()
+            con = sql.connect("data.db")
+            cur = con.cursor()
+            cur.execute("INSERT INTO comment (thread_id, team, num) VALUES (%s, '%s', '%s')"%(thread_id, team, num))
+            con.commit()
+            con.close()
+            return redirect("thread2?id="+html.escape(thread_id))
+    else:
+        return redirect("login-select")
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=80)
-

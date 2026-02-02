@@ -12,5 +12,20 @@ cur = con.cursor()
 #                     )
 #                 """)
 #con.commit()
-cur.execute("delete from thread")
+
+#-----------ここ必ずやる---------------
+#cur.execute("delete from thread")
+#cur.execute("delete from comment")
+#cur.execute("delete from users")
+#cur.execute("delete from log")
+#-----------------------------------
+
+#cur.execute("drop table log")
+#cur.execute("CREATE TABLE log(ip text, email text, uri text, method text, time datetime)")
+
+
+#cur.execute("SELECT ip, email, uri, method, time FROM log")
+#for ip, email, uri, method, time in cur:
+#    print(ip, email, uri, method, time)
 con.commit()
+con.close()
