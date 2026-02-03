@@ -78,17 +78,28 @@ def saw_array(n):
         a.append(n-(i-1))
     return a
 
+def saw2_array(n):
+    a=[]
+    for i in range(0, n, 2):
+        a.append(i)
+    for i in range(0, n, 2):
+        a.append(i)
+    return a
+
 cnt_v = []
 cnt_v2 = []
 cnt_s = []
+cnt_s2 = []
 dep_v = []
 dep_v2 = []
 dep_s = []
+dep_s2 = []
 volly = []
 volly2 = []
 saw = []
+saw2 = []
 val = []
-for i in range(10, 10000, 100):
+for i in range(10, 5000, 100):
     val.append(i)
     a = voly_array(i)
     past = time()
@@ -114,10 +125,19 @@ for i in range(10, 10000, 100):
     maxdepth = 0
     a = saw_array(i)
     dep_s.append(quick(a, 0, len(a)-1, 0)[1])
+    a = saw2_array(i)
+    past = time()
+    cnt_s2.append(quick(a, 0, len(a)-1, 0)[0])
+    now = time()
+    saw2.append(now-past)
+    maxdepth = 0
+    a = saw2_array(i)
+    dep_s2.append(quick(a, 0, len(a)-1, 0)[1])
     
 plt.scatter(val, volly, label="Volley(V-pattern)")
 plt.scatter(val, volly2, label="Volley(High2Low)")
-plt.scatter(val, saw, label="saw")
+plt.scatter(val, saw, label="saw(roop_high-low)")
+plt.scatter(val, saw2, label="saw(2nd)")
 plt.legend()
 plt.xlabel("Number of elements")
 plt.ylabel("Time(s)")
@@ -127,6 +147,7 @@ plt.show()
 plt.scatter(val, cnt_v, label="Volley(V-pattern)")
 plt.scatter(val, cnt_v2, label="Volley(High2Low)")
 plt.scatter(val, cnt_s, label="saw")
+plt.scatter(val, cnt_s2, label="saw2")
 plt.legend()
 plt.xlabel("Number of elements")
 plt.ylabel("Number of swap")
@@ -136,6 +157,7 @@ plt.show()
 plt.scatter(val, dep_v, label="Volley(V-pattern)")
 plt.scatter(val, dep_v2, label="Volley(High2Low)")
 plt.scatter(val, dep_s, label="saw")
+plt.scatter(val, dep_s2, label="saw")
 plt.legend()
 plt.xlabel("Number of elements")
 plt.ylabel("Number of depth")
