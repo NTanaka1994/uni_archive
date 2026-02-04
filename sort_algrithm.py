@@ -79,7 +79,7 @@ def saw_array(n):
     return a
 
 def saw2_array(n):
-    a=[]
+    a = []
     for i in range(0, n, 2):
         a.append(i)
     for i in range(1, n, 2):
@@ -162,4 +162,5 @@ plt.legend()
 plt.xlabel("Number of elements")
 plt.ylabel("Number of depth")
 plt.savefig("quicksort_depth.png")
+
 plt.show()
