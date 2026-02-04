@@ -19,6 +19,7 @@ def insertion(a, n):
             j = j - 1
         a[j+1] = temp
         print(a)  
+        
 maxdepth = 0
 def quick(a, first, last, depth):
     cnt = 0
@@ -55,6 +56,7 @@ def rand_array(n):
         if tmp not in a:
             a.append(tmp)
     return a
+    
 def voly_array(n):
     a = []
     for i in range(n, 0, -2):
@@ -164,3 +166,4 @@ plt.ylabel("Number of depth")
 plt.savefig("quicksort_depth.png")
 
 plt.show()
+
