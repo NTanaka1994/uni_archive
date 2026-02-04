@@ -82,7 +82,7 @@ def saw2_array(n):
     a=[]
     for i in range(0, n, 2):
         a.append(i)
-    for i in range(0, n, 2):
+    for i in range(1, n, 2):
         a.append(i)
     return a
 
@@ -136,8 +136,8 @@ for i in range(10, 5000, 100):
     
 plt.scatter(val, volly, label="Volley(V-pattern)")
 plt.scatter(val, volly2, label="Volley(High2Low)")
-plt.scatter(val, saw, label="saw(roop_high-low)")
-plt.scatter(val, saw2, label="saw(2nd)")
+plt.scatter(val, saw, label="saw(vibration)")
+plt.scatter(val, saw2, label="saw(2-step)")
 plt.legend()
 plt.xlabel("Number of elements")
 plt.ylabel("Time(s)")
@@ -146,8 +146,8 @@ plt.show()
 
 plt.scatter(val, cnt_v, label="Volley(V-pattern)")
 plt.scatter(val, cnt_v2, label="Volley(High2Low)")
-plt.scatter(val, cnt_s, label="saw")
-plt.scatter(val, cnt_s2, label="saw2")
+plt.scatter(val, cnt_s, label="saw(vibration)")
+plt.scatter(val, cnt_s2, label="saw2(2-step)")
 plt.legend()
 plt.xlabel("Number of elements")
 plt.ylabel("Number of swap")
@@ -156,8 +156,8 @@ plt.show()
 
 plt.scatter(val, dep_v, label="Volley(V-pattern)")
 plt.scatter(val, dep_v2, label="Volley(High2Low)")
-plt.scatter(val, dep_s, label="saw")
-plt.scatter(val, dep_s2, label="saw")
+plt.scatter(val, dep_s, label="saw(vibration)")
+plt.scatter(val, dep_s2, label="saw(2-step)")
 plt.legend()
 plt.xlabel("Number of elements")
 plt.ylabel("Number of depth")
