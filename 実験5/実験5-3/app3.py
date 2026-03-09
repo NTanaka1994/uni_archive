@@ -20,9 +20,10 @@ def home():
 def result():
     api = {}
     api["num"] = "14X3111"
-    api["name"] = "田中直哉"
+    api["name"] = "hoge"
     api["in"] = "理工学部応用情報工学科"
     return jsonify(api)
     
 if __name__ == "__main__":
+
     app.run(host="0.0.0.0", port=80)
