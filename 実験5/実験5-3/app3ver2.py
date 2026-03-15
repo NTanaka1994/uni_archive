@@ -27,7 +27,7 @@ async def home():
 def result():
     api = {}
     api["num"] = "14X3111"
-    api["name"] = "田中直哉"
+    api["name"] = "XXXX"
     api["in"] = "理工学部応用情報工学科"
     return jsonify(api)
 
