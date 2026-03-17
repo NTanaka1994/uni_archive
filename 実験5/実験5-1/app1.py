@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 import json
 import requests
+import html
 
 app = Flask(__name__)
 
@@ -19,7 +20,7 @@ def geo():
     pref = jsn["response"]["location"][0]["prefecture"]
     city = jsn["response"]["location"][0]["city"]
     town = jsn["response"]["location"][0]["town"]
-    return "<h1>出力結果</h1>" + "\n" + pref + city + town
+    return "<h1>出力結果</h1>" + "\n" + html.escape(pref) + html.escape(city) + html.escape(town)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=80)
