@@ -2,6 +2,7 @@ from flask import Flask, jsonify
 import json
 import requests
 import pandas as pd
+import html
 
 app = Flask(__name__)
 
@@ -13,17 +14,16 @@ def home():
     for i in range(len(df.values)):
         req = requests.get("http://" + df.values[i][0] +"/api")
         jsn = json.loads(req.text)
-        res += "<tr><td>" + jsn["num"] + "</td><td>" + jsn["name"] + "</td><td>" + jsn["in"] + "</td></tr>\n" 
+        res += "<tr><td>" + html.escape(jsn["num"]) + "</td><td>" + html.escape(jsn["name"]) + "</td><td>" + html.escape(jsn["in"]) + "</td></tr>\n" 
     return res
 
 @app.route("/api")
 def result():
     api = {}
     api["num"] = "14X3111"
-    api["name"] = "hoge"
+    api["name"] = "田中直哉"
     api["in"] = "理工学部応用情報工学科"
     return jsonify(api)
     
 if __name__ == "__main__":
-
     app.run(host="0.0.0.0", port=80)

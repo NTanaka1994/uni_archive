@@ -2,6 +2,7 @@ from flask import Flask, jsonify
 import pandas as pd
 import httpx
 import asyncio
+import html
 
 app = Flask(__name__)
 
@@ -19,7 +20,7 @@ async def home():
         if isinstance(response, Exception):
             continue
         jsn = response.json()
-        res += "<tr><td>" + jsn["num"] + "</td><td>" + jsn["name"] + "</td><td>" + jsn["in"] + "</td></tr>\n"
+        res += "<tr><td>" + html.escape(jsn["num"]) + "</td><td>" + html.escape(jsn["name"]) + "</td><td>" + html.escape(jsn["in"]) + "</td></tr>\n"
     res += "</table>"
     return res
 
@@ -27,7 +28,7 @@ async def home():
 def result():
     api = {}
     api["num"] = "14X3111"
-    api["name"] = "XXXX"
+    api["name"] = "田中直哉"
     api["in"] = "理工学部応用情報工学科"
     return jsonify(api)
 
