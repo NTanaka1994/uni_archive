@@ -1,0 +1,34 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cppbuild",
+			"label": "C/C++: g++ build active file",
+			"command": "/usr/bin/g++",
+			"args": [
+				"-fdiagnostics-color=always",
+				"-g",
+				"${fileDirname}/main.cpp",
+				"${fileDirname}/common.cpp",
+				"${fileDirname}/image_sort.cpp",
+				"-o",
+				"${fileDirname}/bin/${fileBasenameNoExtension}"
+			],
+			"options": {
+				"cwd": "${fileDirname}/bin"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+            "presentation": {
+                "reveal": "always",
+                "focus": true
+            },
+			"detail": "compiler: /usr/bin/g++"
+		}
+	]
+}
