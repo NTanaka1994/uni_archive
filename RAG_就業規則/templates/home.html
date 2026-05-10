@@ -3,4 +3,9 @@
     <textarea name="q"></textarea>
     <input type="submit" value="送信">
 </form>
-{{ ans | safe }}
+<table>
+    <tr><td>質問</td><td></td></tr>
+    <tr><td colspan="2">{{ q | safe }}</td></tr>
+    <tr><td>答え</td><td></td></tr>
+    <tr><td colspan="2">{{ ans | safe }}</td></tr>
+</table>

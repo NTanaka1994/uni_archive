@@ -25,9 +25,7 @@ def load_text_documents():
 
         for doc in docs:
             doc.metadata["source"] = filename
-
         documents.extend(docs)
-    documents.extend(docs)
     return documents
     
 def build_vector_store(documents):
@@ -73,7 +71,7 @@ def create_rag_chain(vector_store):
         )
     ])
     llm = ChatOpenAI(
-        model="gpt-4.1-mini",
+        model="gpt-5.2",
         temperature=0,
         api_key=api_key
     )
@@ -102,11 +100,11 @@ print("準備完了")
 @app.route("/", methods=["GET", "POST"])
 def qa():
     if request.method == "GET":
-        return render_template("home.html")
+        return render_template("gethome.html")
     elif request.method == "POST":
         question = request.form["q"]
         answer = rag_chain.invoke(question)
-        return render_template("home.html", ans="<pre>\n" + html.escape(answer) + "\n<pre>")
+        return render_template("home.html", q=html.escape(question), ans="<pre>\n" + html.escape(answer) + "\n<pre>")
     
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=80)
