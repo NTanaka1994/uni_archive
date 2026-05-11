@@ -39,7 +39,6 @@ def build_vector_store(documents):
     vector_store = FAISS.from_documents(split_docs, embeddings)
     return vector_store
 
-
 def format_docs(docs):
     text = ""
     for doc in docs:
@@ -63,6 +62,7 @@ def create_rag_chain(vector_store):
             "与えられた就業規則の抜粋だけを根拠に回答してください。"
             "抜粋に根拠がない場合は「資料内からは分かりません」と答えてください。"
             "断定しすぎず、日本語で分かりやすく説明してください。"
+            "回答はマークダウンではなくHTMLで書きJavaScriptは入れないでください。回答はpreタグの中です。"
         ),
         (
             "human",
@@ -104,7 +104,7 @@ def qa():
     elif request.method == "POST":
         question = request.form["q"]
         answer = rag_chain.invoke(question)
-        return render_template("home.html", q=html.escape(question), ans="<pre>\n" + html.escape(answer) + "\n<pre>")
+        return render_template("home.html", q=html.escape(question), ans="<pre>\n" + answer + "\n<pre>")
     
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=80)
