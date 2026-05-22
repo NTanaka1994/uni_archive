@@ -80,14 +80,14 @@ def api_graph():
     f = open("graph.json", "r")
     jsn = f.read()
     f.close()
-    return jsonify(jsn)
+    return jsonify(json.loads(jsn))
 
 @app.route("/api-control")
 def api_control():
     f = open("control.json", "r")
     jsn = f.read()
     f.close()
-    return jsonify(jsn)
+    return jsonify(json.loads(jsn))
     
 if __name__ == "__main__":
     app.run(host="0.0.0.0")
