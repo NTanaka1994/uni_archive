@@ -55,8 +55,7 @@
                 req.open("GET", "/api-graph", true);
                 req.onload = function () {
                     if (req.status === 200) {
-                        const jsnText = JSON.parse(req.responseText);
-                        const dic = JSON.parse(jsnText);
+                        const dic = JSON.parse(req.responseText);
                         const graph = dic["graph"];
                         tempChart.data.labels = [];
                         for (let i = 0; i < graph.length; i++) {
