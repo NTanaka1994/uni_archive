@@ -9,10 +9,10 @@ def home():
     jsn = f.read()
     f.close()
     if jsn == "":
-        sence = {}
-        sence["graph"] = []
+        sense = {}
+        sense["graph"] = []
         f = open("graph.json", "w")
-        f.write(json.dumps(sence))
+        f.write(json.dumps(sense))
         f.close()
     f = open("control.json", "r")
     jsn = f.read()
@@ -34,15 +34,15 @@ def reset():
     f = open("control.json", "w")
     f.write(json.dumps(con))
     f.close()
-    sence = {}
-    sence["graph"] = []
+    sense = {}
+    sense["graph"] = []
     f = open("graph.json", "w")
-    f.write(json.dumps(sence))
+    f.write(json.dumps(sense))
     f.close()
     return redirect("..")
 
-@app.route("/sence", methods=["POST"])
-def sence():
+@app.route("/sense", methods=["POST"])
+def sense():
     temp = request.form["temp"]
     f = open("graph.json", "r")
     jsn = f.read()
