@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="static/chart.umd.js"></script>
+    </head>
+    <body>
+        <form method="POST" action="con">
+            <table>
+                <tr><td>none</td><td><input type="radio" value="none" name="con" checked></td></tr>
+                <tr><td>heat</td><td><input type="radio" value="heat" name="con"></td></tr>
+                <tr><td>cool</td><td><input type="radio" value="cool" name="con"></td></tr>
+                <tr><td colspan="2" align="right"><input type="submit" value="post"></td></tr>
+            </table>
+        </form>
+        <div style="width: 60%;">
+            <canvas id="temp"></canvas>
+        </div>
+        <script>
+            const ctx = document.getElementById("temp").getContext("2d");
+            const tempChart = new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: "temperature",
+                            data: [],
+                            borderWidth: 1,
+                            tension: 0,
+                            borderColor: "red",
+                            backgroundColor: "white",
+                            fill: true,
+                            pointBackgroundColor: "white",
+                            pointBorderColor: "red"
+                        }
+                    ]
+                },
+                options: {
+                    animation: false,
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: "count"
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: "temperature"
+                            }
+                        }
+                    }
+                }
+            });
+            function updateGraph() {
+                const req = new XMLHttpRequest();
+                req.open("GET", "/api-graph", true);
+                req.onload = function () {
+                    if (req.status === 200) {
+                        const dic = JSON.parse(req.responseText);
+                        const graph = dic["graph"];
+                        tempChart.data.labels = [];
+                        for (let i = 0; i < graph.length; i++) {
+                            tempChart.data.labels.push(i);
+                        }
+                        tempChart.data.datasets[0].data = graph;
+                        tempChart.update();
+                    }
+                };
+                req.send();
+            }
+            updateGraph();
+            setInterval(updateGraph, 3000);
+        </script>
+        <a href="reset">reset</a>
+    </body>
+</html>
